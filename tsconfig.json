@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es6",
+    "rootDir": "./WebContent",
+    "outDir": "./dist",
+    "strict": true,
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "WebContent/**/*"
+  ]
+}

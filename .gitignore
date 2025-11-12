@@ -1,0 +1,8 @@
+# OS specific
+.DS_Store
+
+# User side
+node_modules
+
+# Translation
+dist

@@ -1,6 +1,6 @@
 import { MorseMeta, MorseState, MorseAudio, Keytype } from './morse-classes.js';
 
-const morseCodeMap = {
+const letterToMorse = {
     'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
     'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
     'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---',
@@ -10,6 +10,17 @@ const morseCodeMap = {
     '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..',
     '9': '----.'
 };
+const morseToLetter = {
+    '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E',
+    '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
+    '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O',
+    '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
+    '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y',
+    '--..': 'Z', '-----': '0', '.----': '1', '..---': '2', '...--': '3',
+    '....-': '4', '.....': '5', '-....': '6', '--...': '7', '---..': '8',
+    '----.': '9', ".-.-.-": ".", "--..--": ",", "..--..": "?",
+};
+type MorseCode = keyof typeof morseToLetter;
 
 
 var morseMeta = new MorseMeta();
@@ -19,13 +30,19 @@ var morseAudio = new MorseAudio();
 //document.addEventListener('keydown', interruptTimer);
 document.addEventListener('keydown', handleKeydown);
 document.addEventListener('keyup', handleKeyup);
+document.addEventListener('keypress', handleKeypress);
 
+function handleKeypress(e: KeyboardEvent) {
+    if (e.key === morseMeta.controls.example) {
+        // Play 'AB C', aka '.- -...  -.-.' as example
+    }
+
+}
 
 function handleKeydown(e: KeyboardEvent) {
     // Stop timers if they are running
     resetTimers(morseState);
 
-    console.log(e.key);
     if (morseMeta.keytype == Keytype.straight &&
         e.key == morseMeta.controls.straight && !e.repeat) {
         straightDown();
@@ -81,7 +98,11 @@ function straightUp() {
 function letterTimeout() {
     let display = $('#letters');
     // CONVERT MORSE TO LETTER HERE.
-    display.append('$');
+    let letter: string | undefined = morseToLetter[morseState.currLetterMorse as MorseCode];
+    if (letter) {
+        display.append(letter);
+    }
+    morseState.currLetterMorse = '';
 }
 
 function spaceTimeout() {

@@ -4,9 +4,9 @@ export enum Keytype {
 }
 
 export class MorseMeta {
-    private _wpm: number = 15;
+    private _wpm: number = 20;
     private _keytype: Keytype = Keytype.straight;
-    private _controls = { straight: ' ', iambicShort: 'z', iambicLong: 'x' };
+    private _controls = { straight: ' ', iambicShort: 'z', iambicLong: 'x', example: 'r' };
     private _times = wpmToMorseTimes(this._wpm);
 
     get wpm() {

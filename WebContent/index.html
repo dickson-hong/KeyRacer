@@ -1,19 +1,25 @@
 <!DOCTYPE HTML>
-<html lang="en">
+<html>
 
 <head>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" type="text/css" href="index.css">
     <title>Welcome to KeyRacer</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 
 <body>
-    <p>Hello my friends</p>
+    <!---- Add main menu here (Flexbox buttons?) ---->
+    <div class="flex-container main-menu">
+        <div>
+            <h2 class="header">MAIN MENU</h2>
+        </div>
+        <div><button id="go-game">Play</button></div>
+        <div><button id="go-settings">Settings</button></div>
+        <div><button id="go-about">About</button></div>
+    </div>
 
-    <h1 class="morseDisplay" id="ditsAndDahs">Placeholder text</h1>
-    <h2 class="morseDisplay" id="letters"></h2>
-    <script type="module" src="../dist/key-input.js"></script>
+    <script src="../dist/index.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,5 @@
-import { MorseMeta, MorseState, MorseAudio, Keytype } from './morse-classes.js';
+import { MorseState, MorseAudio } from './morse-classes.js';
+import { UserProfile, Keytype } from './user-classes.js';
 
 const letterToMorse = {
     'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
@@ -22,15 +23,19 @@ const morseToLetter = {
 };
 type MorseCode = keyof typeof morseToLetter;
 
+// LOAD USER DATA HERE ------------------------------------------------
+let userProfile = new UserProfile("TempUserName");
+// FOR SETTINGS (morseMeta)
+let morseMeta = userProfile.settings;
+let morseState = new MorseState();
+let morseAudio = new MorseAudio();
 
-var morseMeta = new MorseMeta();
-var morseState = new MorseState();
-var morseAudio = new MorseAudio();
 
 //document.addEventListener('keydown', interruptTimer);
 document.addEventListener('keydown', handleKeydown);
 document.addEventListener('keyup', handleKeyup);
 document.addEventListener('keypress', handleKeypress);
+
 
 function handleKeypress(e: KeyboardEvent) {
     if (e.key === morseMeta.controls.example) {
@@ -45,10 +50,16 @@ function handleKeydown(e: KeyboardEvent) {
 
     if (morseMeta.keytype == Keytype.straight &&
         e.key == morseMeta.controls.straight && !e.repeat) {
+        if (keyCallback) {
+            keyCallback();
+        }
         straightDown();
     }
     else if (morseMeta.keytype == Keytype.iambic &&
         (e.key == morseMeta.controls.iambicShort || e.key == morseMeta.controls.iambicLong) && !e.repeat) {
+        if (keyCallback) {
+            keyCallback();
+        }
         iambicDown();
     }
 }
@@ -89,24 +100,47 @@ function straightUp() {
     // Reset startTime: Down-up pair complete
     morseState.startTime = null;
 
-    // Write current letter
+    // Write current letter after timeout (and space later, if needed)
     morseState.letterTimer = setTimeout(letterTimeout, morseMeta.times.letterGap);
-    // Write a space
-    morseState.wordTimer = setTimeout(spaceTimeout, morseMeta.times.wordGap);
+}
+
+
+let keyCallback: (() => void) | undefined | null;
+
+// Notifies game.ts of any relevant activity (keypress for current control scheme)
+export function setKeyCallBack(callback: (() => void)) {
+    keyCallback = callback;
+}
+
+let charCallback: ((char: string) => void) | undefined | null;
+
+// Set game's handler function in main.ts
+// Notifies game.ts of character input
+export function setCharCallback(callback: ((char: string) => void)) {
+    charCallback = callback;
 }
 
 function letterTimeout() {
     let display = $('#letters');
-    // CONVERT MORSE TO LETTER HERE.
     let letter: string | undefined = morseToLetter[morseState.currLetterMorse as MorseCode];
     if (letter) {
+        // HANDLE LETTER INPUT ---------------------------------------------------------
         display.append(letter);
+        if (charCallback) {
+            charCallback(letter);
+        }
+        // Write a space after timeout
+        morseState.wordTimer = setTimeout(spaceTimeout, morseMeta.times.wordGap);
     }
     morseState.currLetterMorse = '';
 }
 
 function spaceTimeout() {
     let display = $('#letters');
+    // HANDLE SPACE INPUT ---------------------------------------------------------
+    if (charCallback) {
+        charCallback(' ');
+    }
     display.append(' ');
 }
 

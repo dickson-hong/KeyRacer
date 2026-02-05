@@ -1,9 +1,38 @@
 // List of word objects for the game
+// Should we be popping instead of indexing? (Wordlist, Word)
 export class WordList {
-    private words: Word[];
+    private _words: Word[];
+    private _currentWordIndex: number = 0;
 
     constructor(quote: string = "") {
-        this.words = parseQuoteToWords(quote);
+        this._words = parseQuoteToWords(quote);
+    }
+
+    getCurrentWord(): Word {
+        return this._words[this._currentWordIndex];
+    }
+
+    advanceToNextWord(): void {
+        if (!this.endOfList()) {
+            this._currentWordIndex += 1;
+        }
+    }
+
+    endOfList(): boolean {
+        if (this._currentWordIndex > this._words.length) {
+            throw new Error("endOfList: WordIndex exceeded list length");
+        }
+        else {
+            return this._currentWordIndex == this._words.length ? true : false;
+        }
+    }
+
+    get words(): Word[] {
+        return this._words;
+    }
+
+    get currentWordIndex(): number {
+        return this._currentWordIndex;
     }
 }
 
@@ -28,13 +57,11 @@ export class Word {
         if (this._position > this._text.length) {
             throw new Error("endOfWord: Word position exceeded word length");
         }
-        else if (this._position == this._text.length) {
-            return true;
-        }
         else {
-            return false;
+            return this._position == this._text.length ? true : false;
         }
     }
+
 
     get text(): string {
         return this._text;
@@ -48,5 +75,10 @@ export class Word {
 // Parse quote and turn each word into Word objects
 // (Should we separate punctuation from words?) --> No, only separate by spaces
 export function parseQuoteToWords(quote: string): Word[] {
-    return []; // FIX ME!!!!!!!!!!!!!!!!!!!!!!!
+    let wordArray: string[] = quote.split(" ");
+    let words: Word[] = [];
+    for (let i = 0; i < wordArray.length; i++) {
+        words[i] = new Word(wordArray[i].trim());
+    }
+    return words;
 }

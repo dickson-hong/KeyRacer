@@ -1,4 +1,5 @@
 import { UserProfile, Keytype } from './user-classes.js';
+import { Word, WordList } from './game-classes.js';
 
 // LOAD USER DATA HERE ------------------------------------------------
 // Maybe from cookies or local storage?
@@ -14,7 +15,7 @@ function startGame() {
 
     let currentText = ""; // User's current text input --> Will be edited by ...
     let textToType = "This is a sample sentence."; // The text the user needs to type
-
+    let wordList: WordList = new WordList(textToType);
 }
 
 export function readCharInput(char: string) {

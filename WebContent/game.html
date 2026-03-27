@@ -11,8 +11,18 @@
 <body>
     <p>Hello my friends</p>
 
-    <h1 class="morseDisplay" id="ditsAndDahs">Placeholder text</h1>
-    <h2 class="morseDisplay" id="letters"></h2>
+    <h1 class="morse-display" id="dits-and-dahs">Placeholder text</h1>
+    <h2 class="morse-display" id="letters"></h2>
+    <div class="display-box">
+        <h2 class="morse-display" id="typed-letter">A</h2>
+        <h2 class="morse-display" id="typed-morse">...-..-</h2>
+        <h2 class="morse-display" id="morse-assist">-...</h2>
+    </div>
+    <div class="no-space-wrapper">
+        <span class="correct morse-display" id="correct-text"></span>
+        <span class="current morse-display" id="current-char"></span>
+        <span class="morse-display" id="remaining-text"></span>
+    </div>
     <script type="module" src="../dist/main.js"></script>
 </body>
 

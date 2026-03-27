@@ -1,10 +1,9 @@
 // List of word objects for the game
-// Should we be popping instead of indexing? (Wordlist, Word)
 export class WordList {
     private _words: Word[];
     private _currentWordIndex: number = 0;
 
-    constructor(quote: string = "") {
+    constructor(quote: string = '') {
         this._words = parseQuoteToWords(quote);
     }
 
@@ -12,19 +11,17 @@ export class WordList {
         return this._words[this._currentWordIndex];
     }
 
-    advanceToNextWord(): void {
-        if (!this.endOfList()) {
-            this._currentWordIndex += 1;
+    advanceToNextWord(): boolean {
+        if (this.endOfList()) {
+            return false;
         }
+        this._currentWordIndex += 1;
+        return true;
     }
 
+    // Is the cursor at the end of the list? (Doesn't check if marked finished)
     endOfList(): boolean {
-        if (this._currentWordIndex > this._words.length) {
-            throw new Error("endOfList: WordIndex exceeded list length");
-        }
-        else {
-            return this._currentWordIndex == this._words.length ? true : false;
-        }
+        return this._currentWordIndex === this._words.length - 1;
     }
 
     get words(): Word[] {
@@ -34,34 +31,42 @@ export class WordList {
     get currentWordIndex(): number {
         return this._currentWordIndex;
     }
+
+    get finished(): boolean {
+        return this.getCurrentWord().finished && this.endOfList();
+    }
 }
 
 export class Word {
     private _text: string;
-    private _position: number;
+    private _position: number = 0;
+    private _finished: boolean = false;
 
-    constructor(text: string, position: number = 0) {
+    constructor(text: string) {
         this._text = text;
-        this._position = position;
     }
 
     getCurrentChar(): string {
         return this._text[this._position];
     }
-    advancePosition(): void {
-        if (!this.endOfWord()) {
-            this._position += 1;
+
+    // Boolean represents whether a state has changed (position advanced or word marked finished)
+    advanceWordPosition(): boolean {
+        if (this.endOfWord()) {
+            if (!this._finished) {
+                this._finished = true;
+                return true;
+            }
+            return false;
         }
-    }
-    endOfWord(): boolean {
-        if (this._position > this._text.length) {
-            throw new Error("endOfWord: Word position exceeded word length");
-        }
-        else {
-            return this._position == this._text.length ? true : false;
-        }
+        this._position += 1;
+        return true;
     }
 
+    // Is the cursor at the end of the word? (Doesn't check if word is marked finished)
+    endOfWord(): boolean {
+        return this._position === this._text.length - 1;
+    }
 
     get text(): string {
         return this._text;
@@ -70,12 +75,16 @@ export class Word {
     get position(): number {
         return this._position;
     }
+
+    get finished(): boolean {
+        return this._finished;
+    }
 }
 
 // Parse quote and turn each word into Word objects
 // (Should we separate punctuation from words?) --> No, only separate by spaces
 export function parseQuoteToWords(quote: string): Word[] {
-    let wordArray: string[] = quote.split(" ");
+    let wordArray: string[] = quote.split(' ');
     let words: Word[] = [];
     for (let i = 0; i < wordArray.length; i++) {
         words[i] = new Word(wordArray[i].trim());

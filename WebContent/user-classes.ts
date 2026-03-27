@@ -21,8 +21,8 @@ export class UserProfile {
 }
 
 export enum Keytype {
-    iambic = 'Iambic',
-    straight = 'Straight'
+    iambic,
+    straight
 }
 
 export class UserSettings {

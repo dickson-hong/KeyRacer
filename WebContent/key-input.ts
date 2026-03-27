@@ -14,7 +14,7 @@ const morseToLetter = {
 type MorseCode = keyof typeof morseToLetter;
 
 // LOAD USER DATA HERE ------------------------------------------------
-let userProfile = new UserProfile("TempUserName");
+let userProfile = new UserProfile('TempUserName');
 // FOR SETTINGS (morseMeta)
 let morseMeta = userProfile.settings;
 let morseState = new MorseState();
@@ -76,7 +76,7 @@ function straightUp() {
     }
     morseState.endTime = Date.now();
     let pressDuration = Math.min(morseState.endTime - morseState.startTime);
-    let display = $('#ditsAndDahs');
+    let display = $('#dits-and-dahs');
     if (pressDuration < morseMeta.times.dash) {
         // Handle dot
         display.text('.');
@@ -110,28 +110,35 @@ export function setCharCallback(callback: ((char: string) => void) | undefined |
     charCallback = callback;
 }
 
+let undefCallback: (() => void) | undefined | null;
+
+export function setUndefCallback(callback: (() => void) | undefined | null) {
+    undefCallback = callback;
+}
+
 function letterTimeout() {
-    let display = $('#letters');
     let letter: string | undefined = morseToLetter[morseState.currLetterMorse as MorseCode];
     if (letter) {
         // HANDLE LETTER INPUT ---------------------------------------------------------
-        display.append(letter);
         if (charCallback) {
             charCallback(letter);
         }
         // Write a space after timeout
         morseState.wordTimer = setTimeout(spaceTimeout, morseMeta.times.wordGap);
     }
+    else {
+        if (undefCallback) {
+            undefCallback();
+        }
+    }
     morseState.currLetterMorse = '';
 }
 
 function spaceTimeout() {
-    let display = $('#letters');
     // HANDLE SPACE INPUT ---------------------------------------------------------
     if (charCallback) {
         charCallback(' ');
     }
-    display.append(' ');
 }
 
 function resetTimers(morseState: MorseState) {

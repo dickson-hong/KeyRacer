@@ -12,6 +12,7 @@ const morseToLetter = {
     '----.': '9', ".-.-.-": ".", "--..--": ",", "..--..": "?",
 };
 type MorseCode = keyof typeof morseToLetter;
+type MorseElement = '.' | '-';
 
 // LOAD USER DATA HERE ------------------------------------------------
 let userProfile = new UserProfile('TempUserName');
@@ -79,12 +80,11 @@ function straightUp() {
     let display = $('#dits-and-dahs');
     if (pressDuration < morseMeta.times.dash) {
         // Handle dot
-        display.text('.');
-        morseState.currLetterMorse += '.';
+        handleMorseElement('.');
+
     } else {
         // Handle dash
-        display.text('-');
-        morseState.currLetterMorse += '-';
+        handleMorseElement('-');
     }
     morseAudio.stopOsc();
     // Reset startTime: Down-up pair complete
@@ -94,6 +94,17 @@ function straightUp() {
     morseState.letterTimer = setTimeout(letterTimeout, morseMeta.times.letterGap);
 }
 
+function handleMorseElement(element: MorseElement) {
+    let morseDisplay = $('#typed-morse')
+    let charDisplay = $('#typed-char');
+
+    morseState.currLetterMorse += element;
+
+    morseDisplay.text(morseState.currLetterMorse);
+    charDisplay.text(morseToLetter[morseState.currLetterMorse as MorseCode] || '');
+
+
+}
 
 let keyCallback: (() => void) | undefined | null;
 
@@ -123,6 +134,8 @@ function letterTimeout() {
         if (charCallback) {
             charCallback(letter);
         }
+
+
         // Write a space after timeout
         morseState.wordTimer = setTimeout(spaceTimeout, morseMeta.times.wordGap);
     }

@@ -1,5 +1,6 @@
 import { UserProfile, Keytype } from './user-classes.js';
 import { Word, WordList } from './game-classes.js';
+import { letterToMorse } from './translation-constants.js';
 
 
 // LOAD USER DATA HERE ------------------------------------------------

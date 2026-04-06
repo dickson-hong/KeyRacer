@@ -24,12 +24,17 @@ export enum Keytype {
     iambic,
     straight
 }
-
+export enum Difficulty {
+    easy,
+    normal
+}
 export class UserSettings {
+
     private _wpm: number = 20;
     private _keytype: Keytype = Keytype.straight;
     private _controls: Controls = new Controls();
     private _times = wpmToMorseTimes(this._wpm);
+    private _difficulty: Difficulty = Difficulty.normal;
 
     get wpm() {
         return this._wpm;
@@ -47,6 +52,10 @@ export class UserSettings {
         return this._times;
     }
 
+    get difficulty() {
+        return this._difficulty;
+    }
+
     set wpm(newWpm: number) {
         this._wpm = newWpm;
         this._times = wpmToMorseTimes(this._wpm);
@@ -58,6 +67,10 @@ export class UserSettings {
 
     set controls(newControls: Controls) {
         this._controls = newControls;
+    }
+
+    set difficulty(newDifficulty: Difficulty) {
+        this._difficulty = newDifficulty;
     }
 }
 

@@ -1,4 +1,4 @@
-import { UserProfile, Keytype } from './user-classes.js';
+import { UserProfile, Keytype, Difficulty, UserSettings } from './user-classes.js';
 import { Word, WordList } from './game-classes.js';
 import { letterToMorse } from './translation-constants.js';
 
@@ -8,30 +8,29 @@ import { letterToMorse } from './translation-constants.js';
 // For now, create a temp user
 let userProfile = new UserProfile('TempUserName');
 let morseMeta = userProfile.settings;
+let difficulty: Difficulty = morseMeta.difficulty;
 
 enum AdvanceState { advanceWord, advancePosition, endOfList, noAdvance, ignoreSpace }
 
-// LOAD FIRST(?) QUOTE DATA HERE
-let quote: string | null = null;
-// Display quote on page here ------------------------------------------------
-quote = "This is a sample"; // The text the user needs to type
+// LOAD FIRST(?) QUOTE DATA HERE ---------------------------------------
+let quote: string = "This is a sample"; // The text the user needs to type
+
+if (!quote) {
+    throw new Error("Error: Unable to retrieve quote data");
+}
+
+let wordList: WordList = new WordList(quote);
 
 initializeDisplay();
 
-// Null when game is not active
-let wordList: WordList | null = null;
-
 // Start game ONCE per refresh (callback is unbound after first start)
 
+let gameStarted = false;
 // Initialize game-state
 function startGame() {
     // The user has already started keying
     console.log("Game started!");
-
-    if (!quote) {
-        throw new Error("startGame: quote is null");
-    }
-    wordList = new WordList(quote);
+    gameStarted = true;
     // Do whatever you need to do to start the game here (Start timer, etc)
     // ------------------------------------------------
 }
@@ -42,8 +41,15 @@ function endGame() {
     // Do whatever you need before resetting the game state
     // Or not... since we might just be sending them to another page?
     // --------------------------------
-    quote = null;
-    wordList = null;
+}
+
+function updateAssistDisplay() {
+    let assistDisplay = $('#morse-assist');
+    let currChar = wordList.getCurrentWord().getCurrentChar().toUpperCase();
+    // DO WE WANT VALIDATION TO ENSURE THE CHAR IS IN OUR CONVERSION CHART???
+    // Depends on our future inplementation
+    // (Maybe we'll strip/skip over invalid char in the quote)
+    assistDisplay.html(letterToMorse[currChar]);
 }
 
 function initializeDisplay() {
@@ -55,10 +61,11 @@ function initializeDisplay() {
     currentCharDisplay.html(quote.substring(0, 1));
     remainingTextDisplay.html(quote.substring(1));
 
-
+    if (difficulty === Difficulty.easy) {
+        updateAssistDisplay();
+    }
 }
-// Maybe we take input to determine whether to show correct or incorrect display?
-// Or have it as a separate function that we call in **checkAdvanceText()**?
+
 function updateDisplay() {
     if (!wordList) {
         throw new Error("updateDisplay: wordList is null");
@@ -95,6 +102,10 @@ function updateDisplay() {
         remainingText += wordList.words[i].text;
     }
     remainingTextDisplay.html(remainingText);
+
+    if (difficulty === Difficulty.easy) {
+        updateAssistDisplay();
+    }
 }
 
 function correctInputDisplay() {
@@ -113,11 +124,11 @@ function incorrectInputDisplay() {
     }
 }
 
+let letterIncorrectFlag = false; // Ignore when letter is already incorrect
 function handleCorrectInput() {
     letterIncorrectFlag = false;
     // Log correct data for analytics ---------------------------------
 }
-let letterIncorrectFlag = false; // Ignore when letter is already incorrect
 function handleIncorrectInput() {
     letterIncorrectFlag = true;
     // Log incorrect data for analytics ---------------------------------
@@ -180,10 +191,9 @@ export function readCharInput(char: string) {
 
 }
 
-let gameStarted = false;
+
 export function checkStartGame() {
     if (!gameStarted) {
-        gameStarted = true;
         startGame();
     }
 }

@@ -12,6 +12,9 @@ let morseMeta = userProfile.settings;
 let morseState = new MorseState();
 let morseAudio = new MorseAudio();
 
+let maxMorseElements = 7; // Max length of Morse code for a single char
+let enforceMaxMorseElements = true; // If true, user cannot input more than maxMorseElements without a letter timeout
+
 
 //document.addEventListener('keydown', interruptTimer);
 document.addEventListener('keydown', handleKeydown);
@@ -27,6 +30,8 @@ function handleKeypress(e: KeyboardEvent) {
 }
 
 function handleKeydown(e: KeyboardEvent) {
+    checkElementLimit(morseState);
+
     // Stop timers if they are running
     resetTimers(morseState);
 
@@ -44,6 +49,7 @@ function handleKeydown(e: KeyboardEvent) {
         }
         iambicDown();
     }
+
 }
 function handleKeyup(e: KeyboardEvent) {
     if (morseMeta.keytype == Keytype.straight && e.key == morseMeta.controls.straight) {
@@ -68,7 +74,6 @@ function straightUp() {
     }
     morseState.endTime = Date.now();
     let pressDuration = Math.min(morseState.endTime - morseState.startTime);
-    let display = $('#dits-and-dahs');
     if (pressDuration < morseMeta.times.dash) {
         // Handle dot
         handleMorseElement('.');
@@ -86,15 +91,13 @@ function straightUp() {
 }
 
 function handleMorseElement(element: MorseElement) {
-    let morseDisplay = $('#typed-morse')
-    let charDisplay = $('#typed-char');
+    if (morseState.listeningDisabled) {
+        return;
+    }
 
     morseState.currLetterMorse += element;
 
-    morseDisplay.text(morseState.currLetterMorse);
-    charDisplay.text(morseToLetter[morseState.currLetterMorse as MorseCode] || '');
-
-
+    updateDisplays();
 }
 
 let keyCallback: (() => void) | undefined | null;
@@ -125,16 +128,14 @@ function letterTimeout() {
         if (charCallback) {
             charCallback(letter);
         }
-
-
-        // Write a space after timeout
-        morseState.wordTimer = setTimeout(spaceTimeout, morseMeta.times.wordGap);
     }
     else {
         if (undefCallback) {
             undefCallback();
         }
     }
+    // Write a space after timeout
+    morseState.wordTimer = setTimeout(spaceTimeout, morseMeta.times.wordGap);
     morseState.currLetterMorse = '';
 }
 
@@ -156,4 +157,22 @@ function resetTimers(morseState: MorseState) {
     }
 }
 
+function updateDisplays() {
+    let morseDisplay = $('#typed-morse')
+    let charDisplay = $('#typed-char');
+
+    morseDisplay.text(morseState.currLetterMorse);
+    charDisplay.text(morseToLetter[morseState.currLetterMorse as MorseCode] || '');
+}
+
+function checkElementLimit(morseState: MorseState) {
+    if (enforceMaxMorseElements && morseState.currLetterMorse.length >= maxMorseElements) {
+        morseState.listeningDisabled = true;
+        morseAudio.disabled = true;
+    }
+    else {
+        morseState.listeningDisabled = false;
+        morseAudio.disabled = false;
+    }
+}
 

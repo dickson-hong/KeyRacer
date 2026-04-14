@@ -5,11 +5,15 @@ export class MorseState {
     wordTimer: number | null = null;
 
     currLetterMorse: string = '';
+
+    listeningDisabled: boolean = false;
 }
 
 export class MorseAudio {
     private context: AudioContext = new AudioContext();
     private osc: OscillatorNode | null = null;
+
+    public disabled: boolean = false;
 
     private makeOsc() {
         var osc: OscillatorNode = this.context.createOscillator();
@@ -19,6 +23,9 @@ export class MorseAudio {
         return osc;
     }
     startOsc() {
+        if (this.disabled) {
+            return;
+        }
         this.osc = this.makeOsc();
         this.osc.start();
     }

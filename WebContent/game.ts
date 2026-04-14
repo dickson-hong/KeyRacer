@@ -191,6 +191,11 @@ export function readCharInput(char: string) {
 
 }
 
+export function handleUndefinedInput() {
+    handleIncorrectInput();
+    incorrectInputDisplay();
+}
+
 
 export function checkStartGame() {
     if (!gameStarted) {

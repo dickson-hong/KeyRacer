@@ -1,5 +1,5 @@
 import { setKeyCallBack, setCharCallback, setUndefCallback } from './key-input.js';
-import { checkStartGame, readCharInput, handleUndefinedInput } from './game.js';
+import { checkStartGame, readCharInput, readUndefinedInput } from './game.js';
 
 function handleFirstInput() {
     checkStartGame();
@@ -8,6 +8,6 @@ function handleFirstInput() {
 
 setKeyCallBack(handleFirstInput);
 setCharCallback(readCharInput);
-setUndefCallback(handleUndefinedInput);
+setUndefCallback(readUndefinedInput);
 
 

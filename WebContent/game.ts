@@ -11,6 +11,7 @@ let morseMeta = userProfile.settings;
 let difficulty: Difficulty = morseMeta.difficulty;
 
 enum AdvanceState { advanceWord, advancePosition, endOfList, noAdvance, ignoreSpace }
+const NA_CHAR = 'N/A';
 
 // LOAD FIRST(?) QUOTE DATA HERE ---------------------------------------
 let quote: string = "This is a sample"; // The text the user needs to type
@@ -67,9 +68,6 @@ function initializeDisplay() {
 }
 
 function updateDisplay() {
-    if (!wordList) {
-        throw new Error("updateDisplay: wordList is null");
-    }
     let correctTextDisplay = $('#correct-text');
     let currentCharDisplay = $('#current-char');
     let remainingTextDisplay = $('#remaining-text');
@@ -115,7 +113,6 @@ function correctInputDisplay() {
     }
 }
 
-// Call this when input is incorrect. Question: Where do we want to revert to grey?
 function incorrectInputDisplay() {
     let currentCharDisplay = $('#current-char');
     if (!currentCharDisplay.hasClass('incorrect')) {
@@ -124,17 +121,23 @@ function incorrectInputDisplay() {
     }
 }
 
-let letterIncorrectFlag = false; // Ignore when letter is already incorrect
-function handleCorrectInput() {
+let letterIncorrectFlag = false; // Ignore space when letter is already incorrect
+function logCorrectInput() {
     letterIncorrectFlag = false;
     // Log correct data for analytics ---------------------------------
 }
-function handleIncorrectInput() {
+function logIncorrectInput(expected: string, actual: string) {
     letterIncorrectFlag = true;
+    if (actual === NA_CHAR) {
+        logUndefinedInput();
+    }
     // Log incorrect data for analytics ---------------------------------
 }
+function logUndefinedInput() {
+    // Log undefined input for analytics ---------------------------------
+}
 
-function checkAdvanceText(wordList: WordList, char: string): AdvanceState {
+function checkAdvanceText(char: string): AdvanceState {
 
     const currentWord = wordList.getCurrentWord();
     if (!currentWord) throw new Error("checkAdvanceText: currentWord is null");
@@ -142,8 +145,10 @@ function checkAdvanceText(wordList: WordList, char: string): AdvanceState {
     if (char === ' ') {
         if (currentWord.finished) {
             // Handle correct space
-            handleCorrectInput();
+            logCorrectInput();
             wordList.advanceToNextWord();
+            // Penalize user after a space timeout if no reaction (acts as a second space)
+            // ------FILL ME IN---------------------------
             return AdvanceState.advanceWord;
         }
         if (letterIncorrectFlag) {
@@ -153,7 +158,7 @@ function checkAdvanceText(wordList: WordList, char: string): AdvanceState {
     else if (char === currentWord.getCurrentChar()?.toUpperCase()) {
         // Handle correct char
         console.log("Correct char!");
-        handleCorrectInput();
+        logCorrectInput();
         correctInputDisplay();
         currentWord.advanceWordPosition();
         if (wordList.finished) {
@@ -164,35 +169,39 @@ function checkAdvanceText(wordList: WordList, char: string): AdvanceState {
 
     // Catch all mistakes (wrong char, extra char after word finished, etc.)
     // Handle incorrect input
-    handleIncorrectInput();
+    logIncorrectInput(getExpectedChar(), char);
     incorrectInputDisplay();
     console.log("Incorrect char!");
-    console.log(`Expected ${currentWord.finished ? ' ' : currentWord.getCurrentChar()} but got ${char}`);
+    console.log(`Expected ${getExpectedChar()} but got ${char}`);
     return AdvanceState.noAdvance;
 }
 
-export function readCharInput(char: string) {
+function getExpectedChar() {
+    const currentWord = wordList.getCurrentWord();
+    if (!currentWord) throw new Error("getExpectedChar: currentWord is null");
+    return currentWord.finished ? ' ' : currentWord.getCurrentChar();
+}
 
+export function readCharInput(char: string) {
     if (!gameStarted) {
         console.log("Game not started. Ignoring char input.");
         return;
     }
 
-    if (!wordList) throw new Error("readCharInput: wordList not initialized");
-
-    const advanceState = checkAdvanceText(wordList, char);
-
+    const advanceState = checkAdvanceText(char);
     updateDisplay();
-
     if (advanceState === AdvanceState.endOfList) {
         endGame();
         return;
     }
-
 }
 
-export function handleUndefinedInput() {
-    handleIncorrectInput();
+export function readUndefinedInput() {
+    if (!gameStarted) {
+        console.log("Game not started. Ignoring char input.");
+        return;
+    }
+    logIncorrectInput(getExpectedChar(), NA_CHAR);
     incorrectInputDisplay();
 }
 

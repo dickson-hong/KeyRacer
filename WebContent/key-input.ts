@@ -88,6 +88,7 @@ function straightUp() {
 
     // Write current letter after timeout (and space later, if needed)
     morseState.letterTimer = setTimeout(letterTimeout, morseMeta.times.letterGap);
+    morseState.wordTimer = setTimeout(spaceTimeout, morseMeta.times.wordGap);
 }
 
 function handleMorseElement(element: MorseElement) {
@@ -100,23 +101,20 @@ function handleMorseElement(element: MorseElement) {
     updateDisplays();
 }
 
-let keyCallback: (() => void) | undefined | null;
-
 // Notifies game.ts of any relevant activity (keypress for current control scheme)
+let keyCallback: (() => void) | undefined | null;
 export function setKeyCallBack(callback: (() => void) | undefined | null) {
     keyCallback = callback;
 }
 
-let charCallback: ((char: string) => void) | undefined | null;
-
 // Set game's handler function in main.ts
 // Notifies game.ts of character input
+let charCallback: ((char: string) => void) | undefined | null;
 export function setCharCallback(callback: ((char: string) => void) | undefined | null) {
     charCallback = callback;
 }
 
 let undefCallback: (() => void) | undefined | null;
-
 export function setUndefCallback(callback: (() => void) | undefined | null) {
     undefCallback = callback;
 }
@@ -134,8 +132,6 @@ function letterTimeout() {
             undefCallback();
         }
     }
-    // Write a space after timeout
-    morseState.wordTimer = setTimeout(spaceTimeout, morseMeta.times.wordGap);
     morseState.currLetterMorse = '';
 }
 

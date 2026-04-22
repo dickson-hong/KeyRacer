@@ -149,6 +149,7 @@ function checkAdvanceText(char: string): AdvanceState {
             wordList.advanceToNextWord();
             // Penalize user after a space timeout if no reaction (acts as a second space)
             // ------FILL ME IN---------------------------
+            // setTimeout() [DONT FORGET TO IMPORT USER TIMES]
             return AdvanceState.advanceWord;
         }
         if (letterIncorrectFlag) {

@@ -148,8 +148,9 @@ function checkAdvanceText(char: string): AdvanceState {
             logCorrectInput();
             wordList.advanceToNextWord();
             // Penalize user after a space timeout if no reaction (acts as a second space)
-            // ------FILL ME IN---------------------------
-            // setTimeout() [DONT FORGET TO IMPORT USER TIMES]
+            extraSpaceTimeout = setTimeout(function () {
+                logIncorrectInput(getExpectedChar(), ' '); incorrectInputDisplay();
+            }, morseMeta.times.wordGap);
             return AdvanceState.advanceWord;
         }
         if (letterIncorrectFlag) {
@@ -173,7 +174,7 @@ function checkAdvanceText(char: string): AdvanceState {
     logIncorrectInput(getExpectedChar(), char);
     incorrectInputDisplay();
     console.log("Incorrect char!");
-    console.log(`Expected ${getExpectedChar()} but got ${char}`);
+    console.log(`Expected \'${getExpectedChar()}\' but got \'${char}\'`);
     return AdvanceState.noAdvance;
 }
 
@@ -206,6 +207,14 @@ export function readUndefinedInput() {
     incorrectInputDisplay();
 }
 
+// Reset the extra space timeout if user reacts
+let extraSpaceTimeout: number | null = null;
+export function readKeyAction() {
+    if (extraSpaceTimeout) {
+        clearTimeout(extraSpaceTimeout);
+        extraSpaceTimeout = null;
+    }
+}
 
 export function checkStartGame() {
     if (!gameStarted) {

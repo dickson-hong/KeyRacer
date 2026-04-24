@@ -124,10 +124,23 @@ function incorrectInputDisplay() {
 let letterIncorrectFlag = false; // Ignore space when letter is already incorrect
 function logCorrectInput() {
     letterIncorrectFlag = false;
+    correctInputDisplay()
+
     // Log correct data for analytics ---------------------------------
 }
 function logIncorrectInput(expected: string, actual: string) {
+    if (actual === ' ' && difficulty === Difficulty.easy) {
+        // Ignore space (timing) mistake on easy mode
+        console.log("Timing mistake ignored on easy mode");
+        return;
+    }
+
+    console.log("Incorrect char!");
+    console.log(`Expected \'${getExpectedChar()}\' but got \'${actual}\'`);
+
     letterIncorrectFlag = true;
+    incorrectInputDisplay()
+
     if (actual === NA_CHAR) {
         logUndefinedInput();
     }
@@ -149,7 +162,7 @@ function checkAdvanceText(char: string): AdvanceState {
             wordList.advanceToNextWord();
             // Penalize user after a space timeout if no reaction (acts as a second space)
             extraSpaceTimeout = setTimeout(function () {
-                logIncorrectInput(getExpectedChar(), ' '); incorrectInputDisplay();
+                logIncorrectInput(getExpectedChar(), ' ');
             }, morseMeta.times.wordGap);
             return AdvanceState.advanceWord;
         }
@@ -161,7 +174,6 @@ function checkAdvanceText(char: string): AdvanceState {
         // Handle correct char
         console.log("Correct char!");
         logCorrectInput();
-        correctInputDisplay();
         currentWord.advanceWordPosition();
         if (wordList.finished) {
             return AdvanceState.endOfList;
@@ -172,16 +184,13 @@ function checkAdvanceText(char: string): AdvanceState {
     // Catch all mistakes (wrong char, extra char after word finished, etc.)
     // Handle incorrect input
     logIncorrectInput(getExpectedChar(), char);
-    incorrectInputDisplay();
-    console.log("Incorrect char!");
-    console.log(`Expected \'${getExpectedChar()}\' but got \'${char}\'`);
     return AdvanceState.noAdvance;
 }
 
 function getExpectedChar() {
     const currentWord = wordList.getCurrentWord();
     if (!currentWord) throw new Error("getExpectedChar: currentWord is null");
-    return currentWord.finished ? ' ' : currentWord.getCurrentChar();
+    return currentWord.finished ? ' ' : currentWord.getCurrentChar().toUpperCase();
 }
 
 export function readCharInput(char: string) {
@@ -204,7 +213,6 @@ export function readUndefinedInput() {
         return;
     }
     logIncorrectInput(getExpectedChar(), NA_CHAR);
-    incorrectInputDisplay();
 }
 
 // Reset the extra space timeout if user reacts

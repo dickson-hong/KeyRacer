@@ -43,6 +43,7 @@ button:hover {
     font-family: 'Courier New', Courier, monospace;
 }
 
+/* For game */
 .display-box {
     display: flex;
     flex-direction: row;
@@ -52,7 +53,7 @@ button:hover {
 }
 
 .display-box h2 {
-    background-color: tomato;
+    background-color: lightblue;
     border-radius: 10px;
     border-color: black;
     border: 2px solid;
@@ -70,7 +71,10 @@ button:hover {
     flex-basis: 1em;
 }
 
-/* For game */
+.display-box-error h2#typed-morse {
+    background-color: coral;
+}
+
 .correct {
     color: lightgreen;
     display: inline;

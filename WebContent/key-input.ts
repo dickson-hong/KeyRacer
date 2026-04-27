@@ -133,6 +133,7 @@ function letterTimeout() {
         }
     }
     morseState.currLetterMorse = '';
+    elementLimitDisplay(false);
 }
 
 function spaceTimeout() {
@@ -165,6 +166,7 @@ function checkElementLimit(morseState: MorseState) {
     if (enforceMaxMorseElements && morseState.currLetterMorse.length >= maxMorseElements) {
         morseState.listeningDisabled = true;
         morseAudio.disabled = true;
+        elementLimitDisplay(true);
     }
     else {
         morseState.listeningDisabled = false;
@@ -172,3 +174,16 @@ function checkElementLimit(morseState: MorseState) {
     }
 }
 
+function elementLimitDisplay(maxedOut: boolean) {
+    let typerDisplay = $('#typer-display');
+    if (maxedOut) {
+        if (!typerDisplay.hasClass('display-box-error')) {
+            typerDisplay.addClass('display-box-error');
+        }
+    }
+    else {
+        if (typerDisplay.hasClass('display-box-error')) {
+            typerDisplay.removeClass('display-box-error');
+        }
+    }
+}

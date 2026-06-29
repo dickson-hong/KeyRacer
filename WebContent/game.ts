@@ -14,6 +14,7 @@ enum AdvanceState { advanceWord, advancePosition, endOfList, noAdvance, ignoreSp
 const NA_CHAR = 'N/A';
 
 // LOAD FIRST(?) QUOTE DATA HERE ---------------------------------------
+
 let quote: string = "This is a sample"; // The text the user needs to type
 
 if (!quote) {

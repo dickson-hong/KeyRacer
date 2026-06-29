@@ -82,14 +82,16 @@ class Controls {
 }
 
 function wpmToMorseTimes(wpm: number) {
-    if (wpm < 1) wpm = 1
-    if (wpm > 200) wpm = 200
-    const dotTime = Math.ceil(1200 / wpm)
+    if (wpm < 1)
+        wpm = 1;
+    if (wpm > 200)
+        wpm = 200;
+    const dotTime = Math.ceil(1200 / wpm);
     return {
         dot: dotTime,
         dash: dotTime * 3,
         elementGap: dotTime,
         letterGap: dotTime * 3,
         wordGap: dotTime * 7
-    }
+    };
 }

@@ -38,8 +38,8 @@ function handleResponse(jsonResponse: any[], filename: string): number {
     console.log(
         `Num duplicates: ${numDuplicates}\n` +
         `Num items: ${jsonResponse.length}\n` +
-        `Dupe rate: ${(numDuplicates / jsonResponse.length) * 100}%\n` +
-        `Example duplicate: ${dupeExample ? JSON.stringify(dupeExample) : "None"}`
+        `Dupe rate: ${(numDuplicates / jsonResponse.length) * 100}%\n`/* +
+        `Example duplicate: ${dupeExample ? JSON.stringify(dupeExample) : "None"}`*/
     );
     return numDuplicates / jsonResponse.length;
 }
@@ -72,7 +72,7 @@ do {
     dupeRate = await collectQuotes(url, saveDirectory);
 
     numRuns++;
-    console.log(`RUN NUMBER: ${numRuns}`);
+    console.log(`RUN NUMBER: ${numRuns} @ ${new Date().toLocaleString()}`);
 
     if (dupeRate < dupeMax) {
         failCounter = 0;

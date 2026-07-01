@@ -63,10 +63,23 @@ async function collectQuotes(url: string, filename: string): Promise<number> {
 const url = "https://zenquotes.io/api/quotes";
 const saveDirectory = "./quotes.json";
 
+const dupeMax = 0.7;
+const failMax = 3;
 let dupeRate;
+let failCounter = 0;
+let numRuns = 0;
 do {
     dupeRate = await collectQuotes(url, saveDirectory);
-    if (dupeRate < 0.6) {
-        await sleep(3600000);
+
+    numRuns++;
+    console.log(`RUN NUMBER: ${numRuns}`);
+
+    if (dupeRate < dupeMax) {
+        failCounter = 0;
     }
-} while (dupeRate < 0.6);
+    else {
+        failCounter++;
+        console.log(`Dupe rate exceeded threshold of ${dupeMax}. Attempts left: ${failMax - failCounter}`);
+    }
+    await sleep(3600000);
+} while (failCounter < failMax);

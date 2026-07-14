@@ -61,7 +61,7 @@ async function collectQuotes(url: string, filename: string): Promise<number> {
 
 
 const url = "https://zenquotes.io/api/quotes";
-const saveDirectory = "./quotes.json";
+const saveDirectory = "../WebContent/quotes.json";
 
 const dupeMax = 0.7;
 const failMax = 3;

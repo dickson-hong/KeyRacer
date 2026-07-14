@@ -9,12 +9,13 @@
       "jquery"
     ],
     "module": "esnext",
-    "outDir": "../dist",
+    "outDir": "./dist",
     "strict": true,
     "sourceMap": true,
     "skipLibCheck": true
   },
   "include": [
     "**/*.ts"
-  ]
+  ],
+  "type": "module"
 }

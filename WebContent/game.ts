@@ -1,6 +1,7 @@
 import { UserProfile, Keytype, Difficulty, UserSettings } from './user-classes.js';
 import { Word, WordList } from './game-classes.js';
 import { letterToMorse } from './translation-constants.js';
+import { getRandomLocalQuote } from './quotes-helpers.js';
 
 
 // LOAD USER DATA HERE ------------------------------------------------
@@ -14,8 +15,9 @@ enum AdvanceState { advanceWord, advancePosition, endOfList, noAdvance, ignoreSp
 const NA_CHAR = 'N/A';
 
 // LOAD FIRST(?) QUOTE DATA HERE ---------------------------------------
+let quoteData = await getRandomLocalQuote();
 
-let quote: string = "This is a sample"; // The text the user needs to type
+let quote: string = quoteData.q; // The text the user needs to type
 
 if (!quote) {
     throw new Error("Error: Unable to retrieve quote data");
